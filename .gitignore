@@ -1,0 +1,16 @@
+# Node.js
+node_modules/
+npm-debug.log
+.env
+
+# 測試與暫存
+frontend/dist/
+frontend/node_modules/
+*.txt
+
+# 資料庫 (雲端會使用另外的資料庫，本機測試用的暫不傳上 GitHub)
+server/database.sqlite
+
+# OS 暫存
+.DS_Store
+Thumbs.db

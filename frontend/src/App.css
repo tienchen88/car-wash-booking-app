@@ -1,0 +1,175 @@
+/* 車子主題預約 APP CSS - 亮橘 + 深碳灰 */
+:root {
+  --car-dark: #1a1a1a;
+  --car-gray: #333333;
+  --car-accent: #ff6b00; /* 經典跑車橘 */
+  --car-blue: #007bff;
+  --text-light: #f5f5f5;
+  --text-muted: #aaaaaa;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--car-dark);
+  color: var(--text-light);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  max-width: 480px; /* 手機寬度限制 */
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #2c2c2c 100%);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--car-accent);
+  padding-bottom: 10px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--car-accent);
+  margin: 0;
+}
+
+.car-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+/* 卡片設計 */
+.card {
+  background: var(--car-gray);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  border: 1px solid #444;
+}
+
+/* 日期選擇器 */
+.date-selector {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  gap: 12px;
+}
+
+.date-item {
+  min-width: 60px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background: #222;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.3s;
+}
+
+.date-item.active {
+  background: var(--car-accent);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 時段列表 */
+.slots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.slot-card {
+  padding: 15px;
+  text-align: center;
+  border-radius: 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.slot-card.booked {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #111;
+}
+
+.slot-card.selected {
+  border-color: var(--car-accent);
+  box-shadow: 0 0 10px var(--car-accent);
+}
+
+.slot-time {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.slot-status {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* 預約按鈕 */
+.btn-book {
+  background: var(--car-accent);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: auto;
+  box-shadow: 0 4px 20px rgba(255, 107, 0, 0.4);
+}
+
+/* 導覽按鈕 */
+.nav-btn {
+  background: none; 
+  border: 1px solid #444; 
+  color: #888; 
+  border-radius: 5px; 
+  font-size: 0.6rem; 
+  cursor: pointer; 
+  padding: 4px 8px;
+  transition: 0.2s;
+}
+
+.nav-btn:hover {
+  border-color: var(--car-accent);
+  color: var(--car-accent);
+}
+
+/* 服務項目按鈕 */
+.service-btn {
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  background: #222;
+  border-radius: 10px;
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.service-btn.active {
+  border-color: var(--car-accent);
+  background: rgba(255, 107, 0, 0.1);
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.2);
+}
+
+.service-btn div:first-child {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
