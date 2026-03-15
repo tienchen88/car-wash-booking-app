@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: car-wash-server
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
