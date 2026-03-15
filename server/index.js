@@ -11,9 +11,49 @@ const port = process.env.PORT || 3001; // 雲端會自動分配 Port，若無則
 app.use(cors());
 app.use(express.json());
 
-// 連接資料庫
+// 連接資料庫並初始化資料表
 const dbPath = path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath);
+
+db.serialize(() => {
+  // 建立使用者表
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    phone TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    password TEXT NOT NULL
+  )`);
+
+  // 建立時段表
+  db.run(`CREATE TABLE IF NOT EXISTS time_slots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    start_time TEXT NOT NULL,
+    end_time TEXT NOT NULL,
+    max_capacity INTEGER DEFAULT 1
+  )`);
+
+  // 建立預約表
+  db.run(`CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    slot_id INTEGER NOT NULL,
+    booking_date TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (slot_id) REFERENCES time_slots (id)
+  )`);
+
+  // 預先填入時段 (若為空)
+  db.get("SELECT COUNT(*) as count FROM time_slots", (err, row) => {
+    if (row && row.count === 0) {
+      const defaultSlots = [['09:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'], ['13:00', '14:00'], ['14:00', '15:00'], ['15:00', '16:00'], ['16:00', '17:00'], ['17:00', '18:00']];
+      const stmt = db.prepare("INSERT INTO time_slots (start_time, end_time) VALUES (?, ?)");
+      defaultSlots.forEach(slot => stmt.run(slot[0], slot[1]));
+      stmt.finalize();
+      console.log('雲端資料庫初始化：已插入預設時段');
+    }
+  });
+});
 
 // --- API 路由設計 ---
 
