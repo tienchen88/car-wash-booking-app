@@ -51,7 +51,8 @@
     <include>
       <uri>model://Panda with Ignition position controller model</uri>
       <name>Panda</name>
-      <pose>0 0 0 0 0 0</pose>
+      <!-- On table surface (z=0.75), at back-centre, rotated 180° to face forward -->
+      <pose>0.4 0.2 0.75 0 0 3.14159</pose>
     </include>
 
     <!-- Table: 1.2 x 0.8 x 0.75 m, top surface at z=0.75 -->
@@ -79,9 +80,9 @@
       </link>
     </model>
 
-    <!-- Red cube: 0.05m side, on table surface -->
+    <!-- Red cube: left of centre, in front of robot -->
     <model name="red_cube">
-      <pose>0.55 0.1 0.775 0 0 0</pose>
+      <pose>0.25 -0.05 0.775 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -107,9 +108,9 @@
       </link>
     </model>
 
-    <!-- Green cube: 0.05m side, on table surface -->
+    <!-- Green cube: right of centre, in front of robot -->
     <model name="green_cube">
-      <pose>0.55 -0.1 0.775 0 0 0</pose>
+      <pose>0.55 -0.05 0.775 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -135,10 +136,10 @@
       </link>
     </model>
 
-    <!-- Red bucket -->
+    <!-- Red bucket: far left on table -->
     <model name="red_bucket">
       <static>true</static>
-      <pose>0.7 0.28 0.75 0 0 0</pose>
+      <pose>0.05 -0.05 0.75 0 0 0</pose>
       <link name="link">
         <collision name="side_collision">
           <pose>0 0 0.06 0 0 0</pose>
@@ -160,10 +161,10 @@
       </link>
     </model>
 
-    <!-- Green bucket -->
+    <!-- Green bucket: far right on table -->
     <model name="green_bucket">
       <static>true</static>
-      <pose>0.7 -0.28 0.75 0 0 0</pose>
+      <pose>0.75 -0.05 0.75 0 0 0</pose>
       <link name="link">
         <collision name="side_collision">
           <pose>0 0 0.06 0 0 0</pose>

@@ -43,8 +43,8 @@ SCAN_JOINTS = {            # joint-space pose so camera faces the table
 }
 
 # Bucket centres in world frame (must match hw2_world.sdf)
-RED_BUCKET_POS   = (0.7,  0.28, 0.75 + 0.12 + PLACE_HEIGHT)   # bucket top + offset
-GREEN_BUCKET_POS = (0.7, -0.28, 0.75 + 0.12 + PLACE_HEIGHT)
+RED_BUCKET_POS   = (0.05, -0.05, 0.75 + 0.12 + PLACE_HEIGHT)
+GREEN_BUCKET_POS = (0.75, -0.05, 0.75 + 0.12 + PLACE_HEIGHT)
 
 GRIPPER_OPEN   = 0.04   # metres (max stroke per finger)
 GRIPPER_CLOSED = 0.003  # slightly open so it doesn't crush (Gazebo sim)
