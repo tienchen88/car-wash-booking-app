@@ -136,52 +136,96 @@
       </link>
     </model>
 
-    <!-- Red bucket: far left on table -->
+    <!-- Red bucket: open cylindrical container (far left) -->
     <model name="red_bucket">
       <static>true</static>
       <pose>0.05 -0.05 0.75 0 0 0</pose>
       <link name="link">
-        <collision name="side_collision">
-          <pose>0 0 0.06 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
-        </collision>
-        <visual name="side_visual">
-          <pose>0 0 0.06 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+        <!-- Visual: outer cylinder wall -->
+        <visual name="outer_visual">
+          <pose>0 0 0.08 0 0 0</pose>
+          <geometry><cylinder><radius>0.09</radius><length>0.16</length></cylinder></geometry>
           <material>
             <ambient>0.9 0.05 0.05 1</ambient>
             <diffuse>0.9 0.05 0.05 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
+            <specular>0.3 0.3 0.3 1</specular>
           </material>
         </visual>
-        <collision name="bottom_collision">
+        <!-- Visual: dark inner disk at top — gives hollow appearance -->
+        <visual name="inner_top_visual">
+          <pose>0 0 0.158 0 0 0</pose>
+          <geometry><cylinder><radius>0.082</radius><length>0.004</length></cylinder></geometry>
+          <material>
+            <ambient>0.15 0.0 0.0 1</ambient>
+            <diffuse>0.15 0.0 0.0 1</diffuse>
+          </material>
+        </visual>
+        <!-- Collision: 4 thin walls forming open square interior (cube 0.05 m fits) -->
+        <collision name="wall_n">
+          <pose>0 0.082 0.08 0 0 0</pose>
+          <geometry><box><size>0.164 0.008 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_s">
+          <pose>0 -0.082 0.08 0 0 0</pose>
+          <geometry><box><size>0.164 0.008 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_e">
+          <pose>0.082 0 0.08 0 0 0</pose>
+          <geometry><box><size>0.008 0.164 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_w">
+          <pose>-0.082 0 0.08 0 0 0</pose>
+          <geometry><box><size>0.008 0.164 0.16</size></box></geometry>
+        </collision>
+        <!-- Collision: bottom plate -->
+        <collision name="bottom">
           <pose>0 0 0.005 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.01</length></cylinder></geometry>
+          <geometry><box><size>0.18 0.18 0.01</size></box></geometry>
         </collision>
       </link>
     </model>
 
-    <!-- Green bucket: far right on table -->
+    <!-- Green bucket: open cylindrical container (far right) -->
     <model name="green_bucket">
       <static>true</static>
       <pose>0.75 -0.05 0.75 0 0 0</pose>
       <link name="link">
-        <collision name="side_collision">
-          <pose>0 0 0.06 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
-        </collision>
-        <visual name="side_visual">
-          <pose>0 0 0.06 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+        <visual name="outer_visual">
+          <pose>0 0 0.08 0 0 0</pose>
+          <geometry><cylinder><radius>0.09</radius><length>0.16</length></cylinder></geometry>
           <material>
             <ambient>0.05 0.8 0.05 1</ambient>
             <diffuse>0.05 0.8 0.05 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
+            <specular>0.3 0.3 0.3 1</specular>
           </material>
         </visual>
-        <collision name="bottom_collision">
+        <visual name="inner_top_visual">
+          <pose>0 0 0.158 0 0 0</pose>
+          <geometry><cylinder><radius>0.082</radius><length>0.004</length></cylinder></geometry>
+          <material>
+            <ambient>0.0 0.15 0.0 1</ambient>
+            <diffuse>0.0 0.15 0.0 1</diffuse>
+          </material>
+        </visual>
+        <collision name="wall_n">
+          <pose>0 0.082 0.08 0 0 0</pose>
+          <geometry><box><size>0.164 0.008 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_s">
+          <pose>0 -0.082 0.08 0 0 0</pose>
+          <geometry><box><size>0.164 0.008 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_e">
+          <pose>0.082 0 0.08 0 0 0</pose>
+          <geometry><box><size>0.008 0.164 0.16</size></box></geometry>
+        </collision>
+        <collision name="wall_w">
+          <pose>-0.082 0 0.08 0 0 0</pose>
+          <geometry><box><size>0.008 0.164 0.16</size></box></geometry>
+        </collision>
+        <collision name="bottom">
           <pose>0 0 0.005 0 0 0</pose>
-          <geometry><cylinder><radius>0.07</radius><length>0.01</length></cylinder></geometry>
+          <geometry><box><size>0.18 0.18 0.01</size></box></geometry>
         </collision>
       </link>
     </model>
