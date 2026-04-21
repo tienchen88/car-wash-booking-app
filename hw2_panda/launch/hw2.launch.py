@@ -5,12 +5,14 @@ Starts:
   1. gz sim  (hw2_world.sdf  — includes Panda SDF model + overhead camera)
   2. robot_state_publisher  (URDF from moveit_resources_panda_description)
   3. ros_gz_bridge  (clock, joint states, camera)
-  4. MoveIt2 move_group
-  5. color_detector node
-  6. pick_and_place node  (optional, default on)
+  4. static_transform_publisher  (overhead camera → world TF)
+  5. MoveIt2 move_group
+  6. color_detector node
+  7. pick_and_place node  (optional, default on)
 """
 
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -19,6 +21,11 @@ from launch.actions import (DeclareLaunchArgument, ExecuteProcess,
 from launch.conditions import IfCondition
 from launch.substitutions import (Command, FindExecutable, LaunchConfiguration)
 from launch_ros.actions import Node
+
+
+def _load_yaml(path: str) -> dict:
+    with open(path) as f:
+        return yaml.safe_load(f)
 
 
 def generate_launch_description():
@@ -41,12 +48,13 @@ def generate_launch_description():
 
     # ── Gz Sim ────────────────────────────────────────────────────────
     world_file = os.path.join(pkg, 'worlds', 'hw2_world.sdf')
-    # GZ_SIM_RESOURCE_PATH lets Gazebo find the Panda model folder
     ros2_ws_src = os.path.expanduser('~/ros2_ws/src')
     gz_env = dict(os.environ)
     existing = gz_env.get('GZ_SIM_RESOURCE_PATH', '')
     gz_env['GZ_SIM_RESOURCE_PATH'] = (
         ros2_ws_src + ((':' + existing) if existing else ''))
+    # WSL2: force software rendering to avoid D3D12/OpenGL crash
+    gz_env['LIBGL_ALWAYS_SOFTWARE'] = '1'
 
     gz_sim = ExecuteProcess(
         cmd=['gz', 'sim', '-r', world_file],
@@ -63,13 +71,11 @@ def generate_launch_description():
     )
 
     # ── ros_gz_bridge ─────────────────────────────────────────────────
-    # Gz Harmonic uses gz.msgs (not ignition.msgs)
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            # Joint states: Gz publishes at this topic for SDF models
             '/world/hw2_world/model/Panda/joint_state'
             '@sensor_msgs/msg/JointState[gz.msgs.Model',
             '/camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image',
@@ -82,26 +88,42 @@ def generate_launch_description():
         ],
     )
 
+    # ── Static TF for overhead camera ─────────────────────────────────
+    # Camera in hw2_world.sdf: pose="0.5 0 2.25 0 1.5708 0" (pitch=90° → down)
+    # static_transform_publisher args order: x y z yaw pitch roll parent child
+    overhead_camera_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='overhead_camera_tf',
+        arguments=['0.5', '0', '2.25', '0', '1.5708', '0',
+                   'world', 'camera_optical_link'],
+        parameters=[{'use_sim_time': True}],
+    )
+
     # ── MoveIt2 move_group ────────────────────────────────────────────
+    # Load YAML configs as dicts so ROS2 creates proper nested parameters.
+    kinematics_cfg = _load_yaml(os.path.join(pkg, 'config', 'kinematics.yaml'))
+    ompl_cfg = _load_yaml(os.path.join(pkg, 'config', 'ompl_planning.yaml'))
+    # ompl_cfg has top-level key 'ompl', so params become ompl.planning_plugin etc.
+
     moveit_config = {
         'robot_description': robot_description_content,
         'robot_description_semantic': open(
             os.path.join(pkg, 'config', 'panda.srdf')).read(),
-        'robot_description_kinematics':
-            os.path.join(pkg, 'config', 'kinematics.yaml'),
-        'robot_description_planning':
-            os.path.join(pkg, 'config', 'joint_limits.yaml'),
-        'planning_pipelines': ['ompl'],
-        'ompl': os.path.join(pkg, 'config', 'ompl_planning.yaml'),
         'use_sim_time': True,
         'publish_robot_description_semantic': True,
+        'planning_pipelines': ['ompl'],
     }
 
     move_group_node = Node(
         package='moveit_ros_move_group',
         executable='move_group',
         output='screen',
-        parameters=[moveit_config],
+        parameters=[
+            moveit_config,
+            {'robot_description_kinematics': kinematics_cfg},
+            ompl_cfg,
+        ],
     )
 
     # ── Vision node ───────────────────────────────────────────────────
@@ -133,6 +155,7 @@ def generate_launch_description():
         gz_sim,
         robot_state_pub,
         bridge,
+        overhead_camera_tf,
         move_group_node,
         color_detector,
         pick_and_place,
