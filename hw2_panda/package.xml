@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>hw2_panda</name>
+  <version>0.0.1</version>
+  <description>HW2: Panda Pick-and-Place with Vision</description>
+  <maintainer email="user@example.com">user</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_py</depend>
+  <depend>moveit_msgs</depend>
+
+  <depend>ros_gz_bridge</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>controller_manager</depend>
+  <depend>joint_trajectory_controller</depend>
+  <depend>gripper_controllers</depend>
+
+  <depend>robot_state_publisher</depend>
+  <depend>xacro</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

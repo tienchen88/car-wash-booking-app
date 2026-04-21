@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="hw2_world">
+
+    <plugin filename="libignition-gazebo-physics-system.so"
+            name="ignition::gazebo::systems::Physics"/>
+    <plugin filename="libignition-gazebo-user-commands-system.so"
+            name="ignition::gazebo::systems::UserCommands"/>
+    <plugin filename="libignition-gazebo-scene-broadcaster-system.so"
+            name="ignition::gazebo::systems::SceneBroadcaster"/>
+    <plugin filename="libignition-gazebo-sensors-system.so"
+            name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="libignition-gazebo-contact-system.so"
+            name="ignition::gazebo::systems::Contact"/>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Table: 1.2 x 0.8 x 0.75 m, top surface at z=0.75 -->
+    <model name="table">
+      <static>true</static>
+      <pose>0.4 0 0 0 0 0</pose>
+      <link name="table_link">
+        <collision name="table_collision">
+          <pose>0 0 0.375 0 0 0</pose>
+          <geometry>
+            <box><size>1.2 0.8 0.75</size></box>
+          </geometry>
+        </collision>
+        <visual name="table_visual">
+          <pose>0 0 0.375 0 0 0</pose>
+          <geometry>
+            <box><size>1.2 0.8 0.75</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.65 0.45 1</ambient>
+            <diffuse>0.8 0.65 0.45 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Red cube: 0.05m side, on table surface -->
+    <model name="red_cube">
+      <pose>0.55 0.1 0.775 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>4.16e-6</ixx><iyy>4.16e-6</iyy><izz>4.16e-6</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.05 0.05 0.05</size></box></geometry>
+          <surface>
+            <friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.05 0.05 0.05</size></box></geometry>
+          <material>
+            <ambient>0.9 0.05 0.05 1</ambient>
+            <diffuse>0.9 0.05 0.05 1</diffuse>
+            <specular>0.3 0.3 0.3 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Green cube: 0.05m side, on table surface -->
+    <model name="green_cube">
+      <pose>0.55 -0.1 0.775 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>4.16e-6</ixx><iyy>4.16e-6</iyy><izz>4.16e-6</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.05 0.05 0.05</size></box></geometry>
+          <surface>
+            <friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.05 0.05 0.05</size></box></geometry>
+          <material>
+            <ambient>0.05 0.8 0.05 1</ambient>
+            <diffuse>0.05 0.8 0.05 1</diffuse>
+            <specular>0.3 0.3 0.3 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Red bucket: cylinder r=0.07 h=0.12, open top, on table -->
+    <model name="red_bucket">
+      <static>true</static>
+      <pose>0.7 0.28 0.75 0 0 0</pose>
+      <link name="link">
+        <!-- Side wall -->
+        <collision name="side_collision">
+          <pose>0 0 0.06 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+        </collision>
+        <visual name="side_visual">
+          <pose>0 0 0.06 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+          <material>
+            <ambient>0.9 0.05 0.05 1</ambient>
+            <diffuse>0.9 0.05 0.05 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+        <!-- Bottom -->
+        <collision name="bottom_collision">
+          <pose>0 0 0.005 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.01</length></cylinder></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Green bucket: cylinder r=0.07 h=0.12, open top, on table -->
+    <model name="green_bucket">
+      <static>true</static>
+      <pose>0.7 -0.28 0.75 0 0 0</pose>
+      <link name="link">
+        <collision name="side_collision">
+          <pose>0 0 0.06 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+        </collision>
+        <visual name="side_visual">
+          <pose>0 0 0.06 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.12</length></cylinder></geometry>
+          <material>
+            <ambient>0.05 0.8 0.05 1</ambient>
+            <diffuse>0.05 0.8 0.05 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+        <collision name="bottom_collision">
+          <pose>0 0 0.005 0 0 0</pose>
+          <geometry><cylinder><radius>0.07</radius><length>0.01</length></cylinder></geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>
