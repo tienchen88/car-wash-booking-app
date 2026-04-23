@@ -88,18 +88,6 @@ def generate_launch_description():
         ],
     )
 
-    # ── Static TF for overhead camera ─────────────────────────────────
-    # Camera in hw2_world.sdf: pose="0.5 0 2.25 0 1.5708 0" (pitch=90° → down)
-    # static_transform_publisher args order: x y z yaw pitch roll parent child
-    overhead_camera_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='overhead_camera_tf',
-        arguments=['0.5', '0', '2.25', '0', '1.5708', '0',
-                   'world', 'camera_optical_link'],
-        parameters=[{'use_sim_time': True}],
-    )
-
     # ── MoveIt2 move_group ────────────────────────────────────────────
     # Load YAML configs as dicts so ROS2 creates proper nested parameters.
     kinematics_cfg = _load_yaml(os.path.join(pkg, 'config', 'kinematics.yaml'))
@@ -155,7 +143,6 @@ def generate_launch_description():
         gz_sim,
         robot_state_pub,
         bridge,
-        overhead_camera_tf,
         move_group_node,
         color_detector,
         pick_and_place,
