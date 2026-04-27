@@ -9,29 +9,36 @@ interface BookingRecord {
   start_time: string;
   end_time: string;
   status: string;
+  group_id: string | null;
 }
 
 interface AdminViewProps {
   onBack: () => void;
+  userId: number;
 }
 
-function AdminView({ onBack }: AdminViewProps) {
+function AdminView({ onBack, userId }: AdminViewProps) {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
-
-  const fetchAllBookings = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/all-bookings?date=${date}`);
-      const data = await response.json();
-      setBookings(data);
-    } catch (error) {
-      console.error('抓取失敗:', error);
-    }
-  };
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    const fetchAllBookings = async () => {
+      setError('');
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/admin/all-bookings?date=${date}&user_id=${userId}`);
+        if (response.status === 403) {
+          setError('權限不足，請確認管理員帳號');
+          return;
+        }
+        const data = await response.json();
+        setBookings(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setError('網路連線失敗');
+      }
+    };
     fetchAllBookings();
-  }, [date]);
+  }, [date, userId]);
 
   return (
     <div className="app-container">
@@ -41,11 +48,25 @@ function AdminView({ onBack }: AdminViewProps) {
         <p style={{color: '#ff6b00', fontSize: '0.8rem'}}>今日營運概況</p>
       </header>
 
-      {/* ... (中間部分不變) */}
+      <div className="card">
+        <h3>選擇查詢日期</h3>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          style={{
+            width: '100%', padding: '10px', borderRadius: '8px',
+            background: '#222', border: '1px solid #444', color: 'white',
+            fontSize: '1rem', marginTop: '8px'
+          }}
+        />
+      </div>
 
       <div className="card">
         <h3>當日預約清單 ({bookings.length} 台)</h3>
-        {bookings.length === 0 ? (
+        {error ? (
+          <p style={{textAlign: 'center', color: '#ff4444'}}>{error}</p>
+        ) : bookings.length === 0 ? (
           <p style={{textAlign: 'center', color: '#888'}}>本日尚無預約</p>
         ) : (
           <div style={{overflowX: 'auto'}}>
@@ -60,7 +81,10 @@ function AdminView({ onBack }: AdminViewProps) {
               <tbody>
                 {bookings.map(b => (
                   <tr key={b.id} style={{borderBottom: '1px solid #333'}}>
-                    <td style={{padding: '12px 8px'}}>{b.start_time}</td>
+                    <td style={{padding: '12px 8px'}}>
+                      {b.start_time}
+                      {b.group_id && <span style={{fontSize: '0.7rem', color: '#ff6b00', marginLeft: '4px'}}>[2hr]</span>}
+                    </td>
                     <td style={{padding: '12px 8px'}}>{b.user_name}</td>
                     <td style={{padding: '12px 8px', color: '#888'}}>{b.user_phone}</td>
                   </tr>
@@ -71,8 +95,8 @@ function AdminView({ onBack }: AdminViewProps) {
         )}
       </div>
 
-      <button 
-        className="btn-book" 
+      <button
+        className="btn-book"
         style={{background: '#444', marginTop: '20px'}}
         onClick={onBack}
       >
