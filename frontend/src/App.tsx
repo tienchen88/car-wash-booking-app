@@ -16,6 +16,7 @@ interface Slot {
 interface User {
   id: number;
   name: string;
+  is_admin?: boolean;
 }
 
 type ServiceType = 'wash' | 'wash_wax';
@@ -29,7 +30,6 @@ function App() {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // 產生未來 7 天的日期
   const getNext7Days = () => {
     const days = [];
     for (let i = 0; i < 7; i++) {
@@ -40,7 +40,6 @@ function App() {
     return days;
   };
 
-  // 向後端抓取時段
   const fetchSlots = async (date: string) => {
     setLoading(true);
     try {
@@ -53,14 +52,14 @@ function App() {
     setLoading(false);
   };
 
+  // 只在日期、使用者、或頁面變更時重新抓取時段；服務類型改變不需要重打 API
   useEffect(() => {
     if (user && view === 'home') {
       fetchSlots(selectedDate);
       setSelectedSlot(null);
     }
-  }, [selectedDate, user, view, selectedService]);
+  }, [selectedDate, user, view]);
 
-  // 送出預約
   const handleBooking = async () => {
     if (!selectedSlot || !user) return;
     const bookingData = {
@@ -89,11 +88,9 @@ function App() {
     }
   };
 
-  // 檢查時段是否可選 (如果是 2 小時，需檢查下一個時段)
   const isSlotSelectable = (index: number) => {
     const slot = slots[index];
     if (slot.booked_count >= slot.max_capacity) return false;
-    
     if (selectedService === 'wash_wax') {
       const nextSlot = slots[index + 1];
       if (!nextSlot || nextSlot.booked_count >= nextSlot.max_capacity) return false;
@@ -102,7 +99,7 @@ function App() {
   };
 
   if (!user) return <LoginView onLoginSuccess={(u) => setUser(u)} />;
-  if (view === 'admin') return <AdminView onBack={() => setView('home')} />;
+  if (view === 'admin') return <AdminView onBack={() => setView('home')} userId={user.id} />;
   if (view === 'my-bookings') return <MyBookingsView userId={user.id} onBack={() => setView('home')} />;
 
   return (
@@ -112,7 +109,9 @@ function App() {
           <span style={{fontSize: '0.8rem', color: '#ff6b00'}}>你好, {user.name}</span>
           <div style={{display: 'flex', gap: '8px'}}>
             <button onClick={() => setView('my-bookings')} className="nav-btn">我的預約</button>
-            <button onClick={() => setView('admin')} className="nav-btn">切換管理</button>
+            {user.is_admin && (
+              <button onClick={() => setView('admin')} className="nav-btn">切換管理</button>
+            )}
             <button onClick={() => setUser(null)} className="nav-btn">登出</button>
           </div>
         </div>
@@ -120,20 +119,19 @@ function App() {
         <h1>Turbo Wash 預約系統</h1>
       </header>
 
-      {/* 服務選擇區 */}
       <section className="card">
         <h3>選擇服務項目</h3>
         <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
-          <div 
+          <div
             className={`service-btn ${selectedService === 'wash' ? 'active' : ''}`}
-            onClick={() => setSelectedService('wash')}
+            onClick={() => { setSelectedService('wash'); setSelectedSlot(null); }}
           >
             <div>普通洗車</div>
             <div style={{fontSize: '0.7rem', opacity: 0.7}}>約 1 小時</div>
           </div>
-          <div 
+          <div
             className={`service-btn ${selectedService === 'wash_wax' ? 'active' : ''}`}
-            onClick={() => setSelectedService('wash_wax')}
+            onClick={() => { setSelectedService('wash_wax'); setSelectedSlot(null); }}
           >
             <div>洗車 + 打蠟</div>
             <div style={{fontSize: '0.7rem', opacity: 0.7}}>約 2 小時</div>
@@ -145,8 +143,8 @@ function App() {
         <h3>選擇日期</h3>
         <div className="date-selector">
           {getNext7Days().map(date => (
-            <div 
-              key={date} 
+            <div
+              key={date}
               className={`date-item ${selectedDate === date ? 'active' : ''}`}
               onClick={() => setSelectedDate(date)}
             >
@@ -166,12 +164,11 @@ function App() {
             {slots.map((slot, index) => {
               const selectable = isSlotSelectable(index);
               const isSelected = selectedSlot === slot.id;
-              // 如果選了 2 小時，下一個時段也要亮起來
-              const isPartofSelected = selectedService === 'wash_wax' && selectedSlot && slots[index-1]?.id === selectedSlot;
+              const isPartofSelected = selectedService === 'wash_wax' && selectedSlot && slots[index - 1]?.id === selectedSlot;
 
               return (
-                <div 
-                  key={slot.id} 
+                <div
+                  key={slot.id}
                   className={`slot-card ${!selectable ? 'booked' : ''} ${isSelected || isPartofSelected ? 'selected' : ''}`}
                   onClick={() => selectable && setSelectedSlot(slot.id)}
                 >
@@ -182,11 +179,11 @@ function App() {
             })}
           </div>
         )}
-        
+
         <div style={{
-          marginTop: '20px', 
-          textAlign: 'center', 
-          fontSize: '0.85rem', 
+          marginTop: '20px',
+          textAlign: 'center',
+          fontSize: '0.85rem',
           color: '#888',
           borderTop: '1px solid #333',
           paddingTop: '15px'
@@ -194,8 +191,8 @@ function App() {
           💡 若無需要的時段或有特殊需求？<br/>
           請撥打預約專線：
           <a href="tel:0912345678" style={{
-            color: '#ff6b00', 
-            textDecoration: 'none', 
+            color: '#ff6b00',
+            textDecoration: 'none',
             fontWeight: 'bold',
             marginLeft: '5px'
           }}>
